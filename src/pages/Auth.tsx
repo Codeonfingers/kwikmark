@@ -75,25 +75,35 @@ const Auth = () => {
   // Redirect authenticated users based on their roles
   useEffect(() => {
     if (user && !loading && !rolesLoading && !isSubmitting) {
+      console.log("[Auth] User authenticated, roles:", roles);
       // Give a small delay for roles to be populated after signup
       const timer = setTimeout(() => {
         redirectBasedOnRole();
-      }, 200);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [user, loading, rolesLoading, roles, isSubmitting]);
 
   const redirectBasedOnRole = () => {
-    // Prioritize the selected role during signup, otherwise use hierarchy
+    console.log("[Auth] Redirecting based on roles:", roles);
+    
+    // Redirect based on actual role from database
     if (hasRole("admin")) {
+      console.log("[Auth] Redirecting to admin dashboard");
       navigate("/admin", { replace: true });
     } else if (hasRole("vendor")) {
+      console.log("[Auth] Redirecting to vendor dashboard");
       navigate("/vendor", { replace: true });
     } else if (hasRole("shopper")) {
+      console.log("[Auth] Redirecting to shopper dashboard");
       navigate("/shopper", { replace: true });
-    } else if (hasRole("consumer") || roles.length === 0) {
-      // Default to customer if consumer role or no roles yet
+    } else if (hasRole("consumer")) {
+      console.log("[Auth] Redirecting to customer dashboard");
       navigate("/customer", { replace: true });
+    } else if (roles.length === 0) {
+      // Roles not loaded yet, wait and retry
+      console.log("[Auth] No roles found, retrying...");
+      setTimeout(() => refreshRoles(), 500);
     }
   };
 
@@ -188,7 +198,15 @@ const Auth = () => {
     if (!validateSignUp()) return;
     
     setIsSubmitting(true);
-    const { error } = await signUp(signUpForm.email, signUpForm.password, signUpForm.fullName);
+    
+    console.log("[Signup] Starting signup with role:", selectedRole);
+    
+    // Pass the selected role to signup - the trigger will assign it
+    const { error } = await signUp(signUpForm.email, signUpForm.password, {
+      fullName: signUpForm.fullName,
+      phone: signUpForm.phone || undefined,
+      selectedRole: selectedRole, // This will be read by the database trigger
+    });
     
     if (error) {
       setIsSubmitting(false);
@@ -200,15 +218,11 @@ const Auth = () => {
       return;
     }
 
-    // Add the selected role if not consumer (consumer is default)
-    if (selectedRole !== "consumer") {
-      const { error: roleError } = await addRole(selectedRole);
-      if (roleError) {
-        // Role assignment failed silently - user will still have consumer role
-      }
-    }
+    // Role is now assigned by the database trigger - no need to call addRole
+    console.log("[Signup] Signup successful, waiting for role assignment...");
 
-    // Refresh roles to ensure we have the latest
+    // Give the trigger time to complete, then refresh roles
+    await new Promise(resolve => setTimeout(resolve, 500));
     await refreshRoles();
     
     setIsSubmitting(false);

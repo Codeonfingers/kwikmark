@@ -2,7 +2,13 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-type AppRole = "consumer" | "vendor" | "shopper" | "admin";
+export type AppRole = "consumer" | "vendor" | "shopper" | "admin";
+
+interface SignUpOptions {
+  fullName: string;
+  phone?: string;
+  selectedRole?: AppRole;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -10,7 +16,7 @@ interface AuthContextType {
   roles: AppRole[];
   loading: boolean;
   rolesLoading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, options: SignUpOptions) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
@@ -78,17 +84,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, options: SignUpOptions) => {
     const redirectUrl = `${window.location.origin}/`;
+    
+    console.log("[Auth] Signing up with role:", options.selectedRole || "consumer");
     
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: { full_name: fullName },
+        data: { 
+          full_name: options.fullName,
+          phone: options.phone,
+          selected_role: options.selectedRole || "consumer", // Pass role to trigger
+        },
       },
     });
+    
+    if (!error) {
+      console.log("[Auth] Signup successful, role will be assigned by trigger:", options.selectedRole || "consumer");
+    }
     
     return { error: error as Error | null };
   };
