@@ -53,14 +53,13 @@ const roleConfig: Record<AppRole, {
   consumer: {
     color: "text-primary",
     label: "Customer",
-    basePath: "/customer",
+    basePath: "/consumer",
     navItems: [
-      { icon: Home, label: "Dashboard", path: "/customer" },
-      { icon: MapPin, label: "Markets", path: "/customer/market" },
-      { icon: Search, label: "Shop", path: "/customer/shop" },
-      { icon: ShoppingCart, label: "My Orders", path: "/customer/orders" },
-      { icon: Package, label: "Subscriptions", path: "/customer/subscription" },
-      { icon: Settings, label: "Settings", path: "/customer/settings" },
+      { icon: Home, label: "Dashboard", path: "/consumer" },
+      { icon: MapPin, label: "Markets", path: "/consumer/market" },
+      { icon: ShoppingCart, label: "My Orders", path: "/consumer/my-orders" },
+      { icon: Package, label: "Subscriptions", path: "/subscriptions" },
+      { icon: Settings, label: "Settings", path: "/consumer/settings" },
     ],
   },
   vendor: {
@@ -72,7 +71,6 @@ const roleConfig: Record<AppRole, {
       { icon: ShoppingCart, label: "Orders", path: "/vendor/orders" },
       { icon: Package, label: "Catalog", path: "/vendor/catalog" },
       { icon: DollarSign, label: "Earnings", path: "/vendor/earnings" },
-      { icon: BarChart3, label: "Performance", path: "/vendor/performance" },
       { icon: Settings, label: "Settings", path: "/vendor/settings" },
     ],
   },
@@ -94,13 +92,12 @@ const roleConfig: Record<AppRole, {
     basePath: "/admin",
     navItems: [
       { icon: LayoutDashboard, label: "Overview", path: "/admin" },
+      { icon: Users, label: "Role Requests", path: "/admin/role-requests" },
       { icon: Store, label: "Vendors", path: "/admin/vendors" },
       { icon: Users, label: "Shoppers", path: "/admin/shoppers" },
       { icon: ShoppingCart, label: "Orders", path: "/admin/orders" },
       { icon: MapPin, label: "Markets", path: "/admin/markets" },
-      { icon: DollarSign, label: "Pricing", path: "/admin/pricing" },
       { icon: AlertTriangle, label: "Disputes", path: "/admin/disputes" },
-      { icon: BarChart3, label: "Reports", path: "/admin/reports" },
     ],
   },
 };

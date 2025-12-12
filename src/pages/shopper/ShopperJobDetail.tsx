@@ -148,7 +148,10 @@ const ShopperJobDetail = () => {
         {showMap && (
           <Card>
             <CardContent className="p-0">
-              <OrderTrackingMap orderId={job.order_id} />
+              <OrderTrackingMap 
+                orderStatus={job.status}
+                shopperName="Shopper"
+              />
             </CardContent>
           </Card>
         )}

@@ -18,6 +18,8 @@ export interface SafeJobWithOrder {
   picked_up_at: string | null;
   delivered_at: string | null;
   shopper_id: string | null;
+  proof_url?: string | null;
+  proof_uploaded_at?: string | null;
   // commission_amount is only visible if user is assigned shopper
   commission_amount?: number | null;
   order?: Order;
@@ -41,6 +43,8 @@ export const useShopperJobs = () => {
       picked_up_at: job.picked_up_at,
       delivered_at: job.delivered_at,
       shopper_id: job.shopper_id,
+      proof_url: job.proof_url,
+      proof_uploaded_at: job.proof_uploaded_at,
       order: job.orders as Order | undefined,
     };
     

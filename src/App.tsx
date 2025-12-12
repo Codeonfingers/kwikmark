@@ -12,15 +12,36 @@ import HowItWorks from "./pages/HowItWorks";
 import Auth from "./pages/Auth";
 import Subscriptions from "./pages/Subscriptions";
 import ProfileSettings from "./pages/ProfileSettings";
+
+// Consumer pages
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import CreateOrder from "./pages/customer/CreateOrder";
 import ConsumerMarket from "./pages/consumer/ConsumerMarket";
+import ConsumerOrders from "./pages/consumer/ConsumerOrders";
+import ConsumerSettings from "./pages/consumer/ConsumerSettings";
 import OrderStatus from "./pages/consumer/OrderStatus";
+
+// Vendor pages
 import VendorDashboardNew from "./pages/vendor/VendorDashboardNew";
+import VendorOnboarding from "./pages/vendor/VendorOnboarding";
+import VendorOrders from "./pages/vendor/VendorOrders";
+import VendorCatalog from "./pages/vendor/VendorCatalog";
+import VendorEarnings from "./pages/vendor/VendorEarnings";
+import VendorSettings from "./pages/vendor/VendorSettings";
+
+// Shopper pages
 import ShopperDashboardNew from "./pages/shopper/ShopperDashboardNew";
 import ShopperOnboarding from "./pages/shopper/ShopperOnboarding";
 import ShopperJobs from "./pages/shopper/ShopperJobs";
+import ShopperJobDetail from "./pages/shopper/ShopperJobDetail";
+import ShopperEarnings from "./pages/shopper/ShopperEarnings";
+import ShopperPerformance from "./pages/shopper/ShopperPerformance";
+import ShopperSettings from "./pages/shopper/ShopperSettings";
+
+// Admin pages
 import AdminDashboardNew from "./pages/admin/AdminDashboardNew";
+import AdminRoleRequests from "./pages/admin/AdminRoleRequests";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +79,16 @@ const App = () => (
                 <ConsumerMarket />
               </ProtectedRoute>
             } />
+            <Route path="/consumer/my-orders" element={
+              <ProtectedRoute requiredRole="consumer">
+                <ConsumerOrders />
+              </ProtectedRoute>
+            } />
+            <Route path="/consumer/settings" element={
+              <ProtectedRoute requiredRole="consumer">
+                <ConsumerSettings />
+              </ProtectedRoute>
+            } />
             <Route path="/consumer/order/new" element={
               <ProtectedRoute requiredRole="consumer">
                 <CreateOrder />
@@ -78,11 +109,6 @@ const App = () => (
                 <CreateOrder />
               </ProtectedRoute>
             } />
-            <Route path="/customer/*" element={
-              <ProtectedRoute requiredRole="consumer">
-                <CustomerDashboard />
-              </ProtectedRoute>
-            } />
             
             {/* Vendor routes */}
             <Route path="/vendor" element={
@@ -95,9 +121,29 @@ const App = () => (
                 <VendorDashboardNew />
               </ProtectedRoute>
             } />
-            <Route path="/vendor/*" element={
+            <Route path="/vendor/onboarding" element={
               <ProtectedRoute requiredRole="vendor">
-                <VendorDashboardNew />
+                <VendorOnboarding />
+              </ProtectedRoute>
+            } />
+            <Route path="/vendor/orders" element={
+              <ProtectedRoute requiredRole="vendor">
+                <VendorOrders />
+              </ProtectedRoute>
+            } />
+            <Route path="/vendor/catalog" element={
+              <ProtectedRoute requiredRole="vendor">
+                <VendorCatalog />
+              </ProtectedRoute>
+            } />
+            <Route path="/vendor/earnings" element={
+              <ProtectedRoute requiredRole="vendor">
+                <VendorEarnings />
+              </ProtectedRoute>
+            } />
+            <Route path="/vendor/settings" element={
+              <ProtectedRoute requiredRole="vendor">
+                <VendorSettings />
               </ProtectedRoute>
             } />
             
@@ -122,9 +168,24 @@ const App = () => (
                 <ShopperJobs />
               </ProtectedRoute>
             } />
-            <Route path="/shopper/*" element={
+            <Route path="/shopper/jobs/:jobId" element={
               <ProtectedRoute requiredRole="shopper">
-                <ShopperDashboardNew />
+                <ShopperJobDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/shopper/earnings" element={
+              <ProtectedRoute requiredRole="shopper">
+                <ShopperEarnings />
+              </ProtectedRoute>
+            } />
+            <Route path="/shopper/performance" element={
+              <ProtectedRoute requiredRole="shopper">
+                <ShopperPerformance />
+              </ProtectedRoute>
+            } />
+            <Route path="/shopper/settings" element={
+              <ProtectedRoute requiredRole="shopper">
+                <ShopperSettings />
               </ProtectedRoute>
             } />
             
@@ -139,9 +200,9 @@ const App = () => (
                 <AdminDashboardNew />
               </ProtectedRoute>
             } />
-            <Route path="/admin/*" element={
+            <Route path="/admin/role-requests" element={
               <ProtectedRoute requiredRole="admin">
-                <AdminDashboardNew />
+                <AdminRoleRequests />
               </ProtectedRoute>
             } />
             
