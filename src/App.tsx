@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import Subscriptions from "./pages/Subscriptions";
 import ProfileSettings from "./pages/ProfileSettings";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
+import CreateOrder from "./pages/customer/CreateOrder";
 import VendorDashboardNew from "./pages/vendor/VendorDashboardNew";
 import ShopperDashboardNew from "./pages/shopper/ShopperDashboardNew";
 import AdminDashboardNew from "./pages/admin/AdminDashboardNew";
@@ -46,6 +47,11 @@ const App = () => (
             <Route path="/customer" element={
               <ProtectedRoute requiredRole="consumer">
                 <CustomerDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/customer/order/new" element={
+              <ProtectedRoute requiredRole="consumer">
+                <CreateOrder />
               </ProtectedRoute>
             } />
             <Route path="/customer/*" element={
