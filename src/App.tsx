@@ -44,6 +44,8 @@ import AdminRoleRequests from "./pages/admin/AdminRoleRequests";
 import AdminVendors from "./pages/admin/AdminVendors";
 import AdminShoppers from "./pages/admin/AdminShoppers";
 import AdminMarkets from "./pages/admin/AdminMarkets";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminDisputes from "./pages/admin/AdminDisputes";
 
 import NotFound from "./pages/NotFound";
 
@@ -221,6 +223,16 @@ const App = () => (
             <Route path="/admin/markets" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminMarkets />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/orders" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminOrders />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/disputes" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDisputes />
               </ProtectedRoute>
             } />
             

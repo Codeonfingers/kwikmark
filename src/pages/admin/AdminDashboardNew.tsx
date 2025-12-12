@@ -35,11 +35,14 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import OrderFilters from "@/components/shared/OrderFilters";
 import { RoleManagementModal } from "@/components/admin/RoleManagementModal";
 import { useAdminData } from "@/hooks/useAdminData";
+import { useAdminOrderEvents } from "@/hooks/useOrderEvents";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const AdminDashboardNew = () => {
-  const { 
+  useAdminOrderEvents(); // Realtime notifications for admin
+  
+  const {
     vendors, 
     shoppers, 
     orders, 
