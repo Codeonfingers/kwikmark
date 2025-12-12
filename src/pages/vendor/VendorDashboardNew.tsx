@@ -195,9 +195,9 @@ const VendorDashboardNew = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="space-y-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-4 md:space-y-6">
+        {/* Quick Stats - Mobile optimized */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
           <DashboardCard
             title="Pending Orders"
             value={pendingOrders.length}
@@ -211,8 +211,8 @@ const VendorDashboardNew = () => {
             variant="primary"
           />
           <DashboardCard
-            title="Total Earnings"
-            value={`₵${totalEarnings.toFixed(2)}`}
+            title="Earnings"
+            value={`₵${totalEarnings.toFixed(0)}`}
             icon={DollarSign}
             variant="success"
           />
@@ -230,17 +230,17 @@ const VendorDashboardNew = () => {
             <Card className="bg-secondary/10 border-secondary/30">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center flex-shrink-0">
                     <AlertTriangle className="w-5 h-5 text-secondary" />
                   </div>
-                  <div className="flex-1">
-                    <p className="font-bold">New Orders Waiting!</p>
-                    <p className="text-sm text-muted-foreground">
-                      You have {pendingOrders.length} order(s) waiting for your response
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm md:text-base">New Orders Waiting!</p>
+                    <p className="text-xs md:text-sm text-muted-foreground truncate">
+                      {pendingOrders.length} order(s) waiting for your response
                     </p>
                   </div>
-                  <Button variant="secondary" size="sm" onClick={() => setActiveTab("orders")}>
-                    View Orders
+                  <Button variant="secondary" size="sm" onClick={() => setActiveTab("orders")} className="flex-shrink-0">
+                    View
                   </Button>
                 </div>
               </CardContent>
@@ -250,16 +250,16 @@ const VendorDashboardNew = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="catalog">Catalog</TabsTrigger>
-            <TabsTrigger value="stock">Stock</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview" className="text-xs md:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs md:text-sm">Orders</TabsTrigger>
+            <TabsTrigger value="catalog" className="text-xs md:text-sm">Catalog</TabsTrigger>
+            <TabsTrigger value="stock" className="text-xs md:text-sm">Stock</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6 mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="overview" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
               {/* Recent Orders */}
               <Card>
                 <CardHeader>
@@ -343,7 +343,7 @@ const VendorDashboardNew = () => {
           </TabsContent>
 
           {/* Orders Tab */}
-          <TabsContent value="orders" className="space-y-4 mt-6">
+          <TabsContent value="orders" className="space-y-4 mt-4 md:mt-6">
             {ordersLoading ? (
               <div className="flex justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />

@@ -128,9 +128,9 @@ const CustomerDashboard = () => {
 
   return (
     <DashboardLayout role="consumer" title="Customer Dashboard">
-      <div className="space-y-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-4 md:space-y-6">
+        {/* Quick Stats - Mobile optimized */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
           <DashboardCard
             title="Active Orders"
             value={pendingOrders.length + activeOrders.length}
@@ -151,7 +151,7 @@ const CustomerDashboard = () => {
           />
           <DashboardCard
             title="Saved"
-            value="₵245.00"
+            value="₵245"
             icon={Star}
             variant="gold"
             description="This month"
@@ -160,14 +160,14 @@ const CustomerDashboard = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-flex">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="shop">Shop</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview" className="text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="shop" className="text-sm">Shop</TabsTrigger>
+            <TabsTrigger value="orders" className="text-sm">Orders</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6 mt-6">
+          <TabsContent value="overview" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
             {/* Active Orders Alert */}
             {activeOrders.length > 0 && (
               <motion.div
@@ -226,28 +226,28 @@ const CustomerDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Quick Actions - Mobile friendly */}
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               <Card 
                 className="cursor-pointer hover:shadow-lg transition-all"
                 onClick={() => setActiveTab("shop")}
               >
-                <CardContent className="p-6 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                    <Plus className="w-7 h-7 text-primary" />
+                <CardContent className="p-4 md:p-6 text-center">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                    <Plus className="w-6 h-6 md:w-7 md:h-7 text-primary" />
                   </div>
-                  <p className="font-bold">New Order</p>
-                  <p className="text-sm text-muted-foreground">Start shopping</p>
+                  <p className="font-bold text-sm md:text-base">New Order</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Start shopping</p>
                 </CardContent>
               </Card>
               <Link to="/subscriptions">
                 <Card className="cursor-pointer hover:shadow-lg transition-all h-full">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-gold/10 flex items-center justify-center mx-auto mb-3">
-                      <Star className="w-7 h-7 text-gold" />
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gold/10 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                      <Star className="w-6 h-6 md:w-7 md:h-7 text-gold" />
                     </div>
-                    <p className="font-bold">Subscriptions</p>
-                    <p className="text-sm text-muted-foreground">Save more</p>
+                    <p className="font-bold text-sm md:text-base">Subscriptions</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">Save more</p>
                   </CardContent>
                 </Card>
               </Link>
@@ -292,7 +292,7 @@ const CustomerDashboard = () => {
           </TabsContent>
 
           {/* Shop Tab */}
-          <TabsContent value="shop" className="space-y-6 mt-6">
+          <TabsContent value="shop" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -337,7 +337,7 @@ const CustomerDashboard = () => {
                 <p className="text-muted-foreground">Check back soon!</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 md:gap-4">
                 {filteredProducts.map((product, index) => (
                   <ProductCard
                     key={product.id}
@@ -362,9 +362,9 @@ const CustomerDashboard = () => {
           </TabsContent>
 
           {/* Orders Tab */}
-          <TabsContent value="orders" className="space-y-4 mt-6">
+          <TabsContent value="orders" className="space-y-4 mt-4 md:mt-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-display text-xl font-bold">Your Orders</h2>
+              <h2 className="font-display text-lg md:text-xl font-bold">Your Orders</h2>
               <OrderExportMenu orders={orders} />
             </div>
 
