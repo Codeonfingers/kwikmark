@@ -34,6 +34,17 @@ SET row_security = off;
 -- Name: app_role; Type: TYPE; Schema: public; Owner: -
 --
 
+-- Create baseline user
+INSERT INTO users (email, password)
+VALUES ('admin@kwikmark.app', crypt('Admin123!', gen_salt('bf')));
+
+-- Assign admin role (user_roles)
+INSERT INTO user_roles (user_id, role)
+SELECT id, 'ADMIN'
+FROM users
+WHERE email = 'admin@kwikmark.app';
+
+
 CREATE TYPE public.app_role AS ENUM (
     'consumer',
     'vendor',
