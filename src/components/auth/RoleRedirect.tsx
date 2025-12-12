@@ -30,7 +30,7 @@ const RoleRedirect = () => {
     } else if (hasRole("shopper")) {
       navigate("/shopper", { replace: true });
     } else {
-      navigate("/consumer", { replace: true });
+      navigate("/customer", { replace: true });
     }
   }, [user, loading, roles, hasRole, navigate]);
 

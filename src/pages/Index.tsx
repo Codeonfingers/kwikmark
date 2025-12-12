@@ -108,13 +108,14 @@ const Index = () => {
               </Badge>
               
               <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                Shop Smarter at the Market —{" "}
-                <span className="text-gradient">Your Items Ready Before You Arrive</span>
+                Market Shopping Made Easy —{" "}
+                <span className="text-gradient">Delivered to Your Doorstep</span>
               </h1>
               
               <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0">
-                Pre-order groceries from trusted market women & verified shoppers. 
-                Pay only after inspection.
+                We shop and prepare your groceries from trusted market women and verified shoppers, 
+                then deliver them safely to your home or workplace. No pre-payment required — 
+                inspect your items first, then pay.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -125,7 +126,7 @@ const Index = () => {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="btn-touch">
-                  <Link to="/how-it-works">How KwikMarket Works</Link>
+                  <Link to="/how-it-works">How KwikMarket Works →</Link>
                 </Button>
               </div>
               
