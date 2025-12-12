@@ -404,33 +404,42 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          device_token: string | null
+          email_notifications: boolean | null
           full_name: string | null
           ghana_card_number: string | null
           id: string
           is_verified: boolean | null
           phone: string | null
+          push_notifications: boolean | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          device_token?: string | null
+          email_notifications?: boolean | null
           full_name?: string | null
           ghana_card_number?: string | null
           id?: string
           is_verified?: boolean | null
           phone?: string | null
+          push_notifications?: boolean | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          device_token?: string | null
+          email_notifications?: boolean | null
           full_name?: string | null
           ghana_card_number?: string | null
           id?: string
           is_verified?: boolean | null
           phone?: string | null
+          push_notifications?: boolean | null
           updated_at?: string
           user_id?: string
         }
@@ -652,6 +661,72 @@ export type Database = {
             columns: ["market_id"]
             isOneToOne: false
             referencedRelation: "markets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      substitution_requests: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string | null
+          order_id: string
+          order_item_id: string
+          reason: string
+          responded_at: string | null
+          responded_by: string | null
+          response_image_url: string | null
+          response_note: string | null
+          status: string
+          suggested_item: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          order_id: string
+          order_item_id: string
+          reason: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_image_url?: string | null
+          response_note?: string | null
+          status?: string
+          suggested_item?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          order_id?: string
+          order_item_id?: string
+          reason?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_image_url?: string | null
+          response_note?: string | null
+          status?: string
+          suggested_item?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "substitution_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "substitution_requests_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
             referencedColumns: ["id"]
           },
         ]
