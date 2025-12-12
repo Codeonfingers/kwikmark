@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: string | null
+          record_id: string | null
+          table_name: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -553,9 +586,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_profiles_view: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string | null
+          ghana_card_masked: string | null
+          id: string | null
+          is_verified: boolean | null
+          phone_masked: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          ghana_card_masked?: never
+          id?: string | null
+          is_verified?: boolean | null
+          phone_masked?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          ghana_card_masked?: never
+          id?: string | null
+          is_verified?: boolean | null
+          phone_masked?: never
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      admin_grant_role: {
+        Args: {
+          target_role: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -563,6 +638,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      mask_ghana_card: { Args: { card_number: string }; Returns: string }
+      mask_phone: { Args: { phone_number: string }; Returns: string }
     }
     Enums: {
       app_role: "consumer" | "vendor" | "shopper" | "admin"
