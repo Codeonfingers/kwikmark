@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Package, Clock, Eye, Filter, CreditCard, Star, MapPin } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Package, Clock, Eye, Filter, CreditCard, Star, MapPin, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,6 +25,11 @@ const ConsumerOrders = () => {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-display font-bold">My Orders</h1>
           <div className="flex gap-2">
+            <Link to="/consumer/disputes/new">
+              <Button variant="outline" size="sm">
+                <AlertTriangle className="w-4 h-4 mr-1" /> Report Issue
+              </Button>
+            </Link>
             <OrderExportMenu orders={orders} />
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-40">

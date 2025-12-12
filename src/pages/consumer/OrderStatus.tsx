@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   Package, CheckCircle2, Clock, Truck, MapPin, ArrowLeft, Loader2, Star,
-  Camera, ThumbsUp, ThumbsDown, AlertTriangle, CreditCard
+  Camera, ThumbsUp, ThumbsDown, AlertTriangle, CreditCard, Flag
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -312,6 +312,13 @@ const OrderStatus = () => {
               <Star className="w-4 h-4 mr-2" /> Rate Order
             </Button>
           )}
+
+          {/* Report Problem Link */}
+          <Link to={`/consumer/disputes/new?orderId=${order.id}`}>
+            <Button variant="ghost" className="w-full text-muted-foreground">
+              <Flag className="w-4 h-4 mr-2" /> Report a Problem
+            </Button>
+          </Link>
         </div>
 
         {/* Inspection Rejection Modal */}
