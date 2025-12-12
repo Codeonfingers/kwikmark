@@ -88,7 +88,29 @@ serve(async (req) => {
       });
     }
 
-    // Create payment record
+    // Check for existing pending/processing payment for this order
+    const { data: existingPayment } = await supabaseClient
+      .from('payments')
+      .select('id, status')
+      .eq('order_id', orderId)
+      .in('status', ['pending', 'processing'])
+      .single();
+
+    if (existingPayment) {
+      return new Response(JSON.stringify({ 
+        error: 'A payment is already pending for this order',
+        payment_id: existingPayment.id
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Generate a reference for tracking (NOT a transaction ID - that comes from the payment provider)
+    const paymentReference = `REF-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+    // Create payment record with PENDING status
+    // SECURITY: Payment remains pending until verified by admin or payment provider webhook
     const { data: payment, error: paymentError } = await supabaseClient
       .from('payments')
       .insert({
@@ -98,54 +120,49 @@ serve(async (req) => {
         payment_method: 'momo',
         momo_phone: momoPhone,
         momo_network: momoNetwork,
-        status: 'processing',
+        status: 'pending', // CRITICAL: Never auto-complete payments
+        external_reference: paymentReference,
       })
       .select()
       .single();
 
     if (paymentError) {
-      return new Response(JSON.stringify({ error: 'Failed to create payment' }), {
+      console.error('Failed to create payment record:', paymentError);
+      return new Response(JSON.stringify({ error: 'Failed to create payment record' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // MOCK: In production, call actual MoMo API here
-    // For now, simulate processing and mark as completed
-    const transactionId = `MOMO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-    // Update payment to completed
-    const { error: updatePaymentError } = await supabaseClient
-      .from('payments')
-      .update({
-        status: 'completed',
-        transaction_id: transactionId,
-      })
-      .eq('id', payment.id);
-
-    if (updatePaymentError) {
-      return new Response(JSON.stringify({ error: 'Failed to update payment' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Update order status
+    // Update order to show payment is pending (but NOT completed)
     await supabaseClient
       .from('orders')
-      .update({ status: 'completed' })
+      .update({ status: 'pending' }) // Order stays pending until payment is verified
       .eq('id', orderId);
+
+    console.log(`Payment initiated for order ${orderId}, reference: ${paymentReference}`);
+
+    // TODO: In production, integrate with actual MoMo API here:
+    // 1. Call MTN/Vodafone/AirtelTigo API to initiate payment request
+    // 2. Store their transaction reference in transaction_id field
+    // 3. Set up webhook endpoint to receive payment confirmation
+    // 4. Only mark as 'completed' when webhook confirms payment success
 
     return new Response(JSON.stringify({ 
       success: true, 
-      payment: { ...payment, status: 'completed', transaction_id: transactionId },
-      message: 'Payment processed successfully'
+      payment: { 
+        id: payment.id, 
+        status: 'pending',
+        reference: paymentReference
+      },
+      message: 'Payment request submitted. Please complete the payment on your phone and wait for confirmation. An admin will verify your payment.'
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
+    console.error('Payment processing error:', error);
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
