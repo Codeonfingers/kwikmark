@@ -92,7 +92,7 @@ const Auth = () => {
     } else if (hasRole("shopper")) {
       navigate("/shopper", { replace: true });
     } else {
-      navigate("/consumer", { replace: true });
+      navigate("/customer", { replace: true });
     }
   };
 
@@ -203,7 +203,7 @@ const Auth = () => {
     if (selectedRole !== "consumer") {
       const { error: roleError } = await addRole(selectedRole);
       if (roleError) {
-        console.error("Failed to add role:", roleError);
+        // Role assignment failed silently - user will still have consumer role
       }
     }
 
