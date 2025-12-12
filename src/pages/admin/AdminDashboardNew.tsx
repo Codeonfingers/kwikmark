@@ -17,7 +17,8 @@ import {
   MoreVertical,
   Eye,
   Ban,
-  Shield
+  Shield,
+  UserCog
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +33,9 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import DashboardCard from "@/components/shared/DashboardCard";
 import StatusBadge from "@/components/shared/StatusBadge";
 import OrderFilters from "@/components/shared/OrderFilters";
+import { RoleManagementModal } from "@/components/admin/RoleManagementModal";
 import { useAdminData } from "@/hooks/useAdminData";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const AdminDashboardNew = () => {
@@ -52,6 +55,58 @@ const AdminDashboardNew = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [detailsModal, setDetailsModal] = useState(false);
+  
+  // Role management state
+  const [users, setUsers] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedUserName, setSelectedUserName] = useState<string>("");
+
+  // Fetch users with roles
+  useEffect(() => {
+    if (activeTab === "users") {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      // Get profiles with their roles
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("*");
+      
+      if (profilesError) throw profilesError;
+
+      // Get all user roles
+      const { data: roles, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("*");
+
+      if (rolesError) throw rolesError;
+
+      // Combine profiles with roles
+      const usersWithRoles = (profiles || []).map(profile => ({
+        ...profile,
+        roles: (roles || []).filter(r => r.user_id === profile.user_id).map(r => r.role)
+      }));
+
+      setUsers(usersWithRoles);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast.error("Failed to fetch users");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const openRoleManagement = (userId: string, userName?: string) => {
+    setSelectedUserId(userId);
+    setSelectedUserName(userName || "");
+    setRoleModalOpen(true);
+  };
 
   // Stats
   const pendingVendors = vendors.filter(v => !v.is_verified);
@@ -153,8 +208,11 @@ const AdminDashboardNew = () => {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="users">
+              <UserCog className="w-4 h-4 mr-1" /> Users
+            </TabsTrigger>
             <TabsTrigger value="vendors">
               Vendors {pendingVendors.length > 0 && <Badge variant="destructive" className="ml-1">{pendingVendors.length}</Badge>}
             </TabsTrigger>
@@ -463,7 +521,104 @@ const AdminDashboardNew = () => {
               </div>
             )}
           </TabsContent>
+
+          {/* Users Tab - Role Management */}
+          <TabsContent value="users" className="space-y-4 mt-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <h2 className="font-display text-xl font-bold">User Role Management</h2>
+              <div className="relative flex-1 sm:w-64 sm:flex-none">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search users..."
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {loadingUsers ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Roles</TableHead>
+                      <TableHead>Verified</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{user.full_name || "Unnamed"}</p>
+                            <p className="text-xs text-muted-foreground">{user.user_id?.slice(0, 8)}...</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {user.phone ? `***${user.phone.slice(-4)}` : "-"}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {user.roles?.map((role: string) => (
+                              <Badge 
+                                key={role} 
+                                variant={role === "admin" ? "destructive" : "secondary"}
+                                className="text-xs"
+                              >
+                                {role}
+                              </Badge>
+                            ))}
+                            {(!user.roles || user.roles.length === 0) && (
+                              <span className="text-muted-foreground text-sm">No roles</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <StatusBadge status={user.is_verified ? "verified" : "unverified"} />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => openRoleManagement(user.user_id, user.full_name)}>
+                                <Shield className="w-4 h-4 mr-2" /> Manage Roles
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => { setSelectedItem(user); setDetailsModal(true); }}>
+                                <Eye className="w-4 h-4 mr-2" /> View Details
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            )}
+          </TabsContent>
         </Tabs>
+
+        {/* Role Management Modal */}
+        <RoleManagementModal
+          open={roleModalOpen}
+          onOpenChange={setRoleModalOpen}
+          targetUserId={selectedUserId}
+          targetUserName={selectedUserName}
+          onRoleChanged={() => {
+            fetchUsers();
+            refetch();
+          }}
+        />
       </div>
     </DashboardLayout>
   );

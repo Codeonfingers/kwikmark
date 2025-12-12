@@ -412,6 +412,45 @@ export type Database = {
           },
         ]
       }
+      role_audit_log: {
+        Row: {
+          action: string
+          admin_user: string
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          mfa_verified: boolean | null
+          reason: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          target_user: string
+          trace_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_user: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          mfa_verified?: boolean | null
+          reason?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          target_user: string
+          trace_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          mfa_verified?: boolean | null
+          reason?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          target_user?: string
+          trace_id?: string | null
+        }
+        Relationships: []
+      }
       shopper_jobs: {
         Row: {
           accepted_at: string | null
@@ -624,12 +663,33 @@ export type Database = {
       }
     }
     Functions: {
+      admin_get_user_roles: {
+        Args: { target_user_id: string }
+        Returns: {
+          created_at: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
       admin_grant_role: {
         Args: {
+          ip_addr?: string
+          mfa_verified?: boolean
+          reason?: string
           target_role: Database["public"]["Enums"]["app_role"]
           target_user_id: string
+          trace?: string
         }
-        Returns: undefined
+        Returns: Json
+      }
+      admin_revoke_role: {
+        Args: {
+          ip_addr?: string
+          reason?: string
+          target_role: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
+          trace?: string
+        }
+        Returns: Json
       }
       has_role: {
         Args: {
