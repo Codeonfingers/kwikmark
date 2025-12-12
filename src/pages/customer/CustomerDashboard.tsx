@@ -228,18 +228,17 @@ const CustomerDashboard = () => {
 
             {/* Quick Actions - Mobile friendly */}
             <div className="grid grid-cols-2 gap-3 md:gap-4">
-              <Card 
-                className="cursor-pointer hover:shadow-lg transition-all"
-                onClick={() => setActiveTab("shop")}
-              >
-                <CardContent className="p-4 md:p-6 text-center">
-                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 md:mb-3">
-                    <Plus className="w-6 h-6 md:w-7 md:h-7 text-primary" />
-                  </div>
-                  <p className="font-bold text-sm md:text-base">New Order</p>
-                  <p className="text-xs md:text-sm text-muted-foreground">Start shopping</p>
-                </CardContent>
-              </Card>
+              <Link to="/customer/order/new">
+                <Card className="cursor-pointer hover:shadow-lg transition-all h-full">
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 md:mb-3">
+                      <Plus className="w-6 h-6 md:w-7 md:h-7 text-primary" />
+                    </div>
+                    <p className="font-bold text-sm md:text-base">New Order</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">Start shopping</p>
+                  </CardContent>
+                </Card>
+              </Link>
               <Link to="/subscriptions">
                 <Card className="cursor-pointer hover:shadow-lg transition-all h-full">
                   <CardContent className="p-4 md:p-6 text-center">
