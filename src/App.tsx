@@ -41,6 +41,9 @@ import ShopperSettings from "./pages/shopper/ShopperSettings";
 // Admin pages
 import AdminDashboardNew from "./pages/admin/AdminDashboardNew";
 import AdminRoleRequests from "./pages/admin/AdminRoleRequests";
+import AdminVendors from "./pages/admin/AdminVendors";
+import AdminShoppers from "./pages/admin/AdminShoppers";
+import AdminMarkets from "./pages/admin/AdminMarkets";
 
 import NotFound from "./pages/NotFound";
 
@@ -203,6 +206,21 @@ const App = () => (
             <Route path="/admin/role-requests" element={
               <ProtectedRoute requiredRole="admin">
                 <AdminRoleRequests />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/vendors" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminVendors />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/shoppers" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminShoppers />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/markets" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminMarkets />
               </ProtectedRoute>
             } />
             
