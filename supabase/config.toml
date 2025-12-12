@@ -1,1 +1,13 @@
 project_id = "apujoyoswegaorujkrbu"
+
+[functions.process-payment]
+verify_jwt = true
+
+[functions.update-order-status]
+verify_jwt = true
+
+[functions.validate-profile]
+verify_jwt = true
+
+[functions.admin-roles]
+verify_jwt = true
