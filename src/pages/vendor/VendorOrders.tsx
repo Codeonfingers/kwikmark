@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Package, Clock, CheckCircle2, X, Filter } from "lucide-react";
+import { Package, Clock, CheckCircle2, X, Filter, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import StatusBadge from "@/components/shared/StatusBadge";
-import { useOrders } from "@/hooks/useOrders";
+import SubstitutionRequestsList from "@/components/substitution/SubstitutionRequestsList";
+import { useOrders, OrderWithItems } from "@/hooks/useOrders";
 import { useVendor } from "@/hooks/useVendor";
 import { toast } from "sonner";
 import { OrderStatus } from "@/types";
@@ -16,6 +18,7 @@ const VendorOrders = () => {
   const { vendor } = useVendor();
   const { orders, updateOrderStatus, loading } = useOrders();
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
 
   const vendorOrders = orders.filter((o) => o.vendor_id === vendor?.id);
 
@@ -134,6 +137,13 @@ const VendorOrders = () => {
                       ₵{Number(order.total).toFixed(2)}
                     </p>
                     <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        <RefreshCw className="w-4 h-4 mr-1" /> Details
+                      </Button>
                       {order.status === "pending" && (
                         <>
                           <Button
@@ -175,6 +185,41 @@ const VendorOrders = () => {
             ))}
           </div>
         )}
+
+        {/* Order Detail Modal with Substitution Requests */}
+        <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Order {selectedOrder?.order_number}</DialogTitle>
+            </DialogHeader>
+            {selectedOrder && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <StatusBadge status={selectedOrder.status as any} />
+                  <p className="text-lg font-bold">₵{Number(selectedOrder.total).toFixed(2)}</p>
+                </div>
+
+                <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
+                  {selectedOrder.items?.map((item, idx) => (
+                    <div key={idx} className="flex justify-between text-sm">
+                      <span>{item.quantity}x {item.product_name}</span>
+                      <span className="font-medium">₵{Number(item.total_price).toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {selectedOrder.special_instructions && (
+                  <div className="p-3 bg-secondary/10 rounded-lg">
+                    <p className="text-sm font-medium">Special Instructions:</p>
+                    <p className="text-sm text-muted-foreground">{selectedOrder.special_instructions}</p>
+                  </div>
+                )}
+
+                <SubstitutionRequestsList orderId={selectedOrder.id} role="vendor" />
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

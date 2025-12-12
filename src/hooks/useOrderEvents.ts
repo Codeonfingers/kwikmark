@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Database } from "@/integrations/supabase/types";
+import { usePushNotifications } from "./usePushNotifications";
 
 type Order = Database["public"]["Tables"]["orders"]["Row"];
 type ShopperJob = Database["public"]["Tables"]["shopper_jobs"]["Row"];
@@ -16,6 +17,7 @@ interface OrderEventConfig {
 
 export const useOrderEvents = (config: OrderEventConfig) => {
   const { user } = useAuth();
+  const { sendNotification, notifyOrderStatus, notifyNewOrder, notifyNewJob } = usePushNotifications();
 
   const handleOrderChange = useCallback(
     (payload: { eventType: string; new: Order; old: Order | null }) => {
@@ -31,21 +33,25 @@ export const useOrderEvents = (config: OrderEventConfig) => {
                 toast.success("Your order has been accepted by the vendor!", {
                   description: `Order ${newOrder.order_number} is being prepared.`,
                 });
+                notifyOrderStatus(newOrder.order_number, "accepted");
                 break;
               case "ready":
                 toast.success("Your order is ready!", {
                   description: "The shopper will deliver it soon.",
                 });
+                notifyOrderStatus(newOrder.order_number, "ready");
                 break;
               case "picked_up":
                 toast.info("Order picked up", {
                   description: "Your items are on the way!",
                 });
+                notifyOrderStatus(newOrder.order_number, "picked_up");
                 break;
               case "completed":
                 toast.success("Order completed!", {
                   description: "Thank you for shopping with KwikMarket!",
                 });
+                notifyOrderStatus(newOrder.order_number, "completed");
                 break;
               case "disputed":
                 toast.warning("Order disputed", {
@@ -75,6 +81,7 @@ export const useOrderEvents = (config: OrderEventConfig) => {
           toast.success("New order received!", {
             description: `Order ${newOrder.order_number} needs your attention.`,
           });
+          notifyNewOrder(newOrder.order_number);
         }
         if (eventType === "UPDATE" && oldOrder) {
           if (newOrder.inspection_status === "approved" && oldOrder.inspection_status !== "approved") {
@@ -118,6 +125,7 @@ export const useOrderEvents = (config: OrderEventConfig) => {
           toast.success("New job available!", {
             description: "A new delivery job is waiting for you.",
           });
+          notifyNewJob(Number(newJob.commission_amount) || 5);
         }
         if (eventType === "UPDATE" && oldJob && newJob.shopper_id === shopperId) {
           if (newJob.status === "completed" && oldJob.status !== "completed") {

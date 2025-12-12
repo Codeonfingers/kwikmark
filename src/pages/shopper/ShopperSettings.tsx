@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, Phone, MapPin, CreditCard, Save, Loader2 } from "lucide-react";
+import { User, Phone, MapPin, CreditCard, Save, Loader2, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,12 +9,17 @@ import { Switch } from "@/components/ui/switch";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMarkets } from "@/hooks/useMarkets";
+import { useNotificationPreferences } from "@/hooks/useNotificationPreferences";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const ShopperSettings = () => {
   const { user } = useAuth();
   const { markets } = useMarkets();
+  const { 
+    emailNotifications, pushNotifications, pushSupported, 
+    enablePushNotifications, updatePreferences 
+  } = useNotificationPreferences();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -187,6 +192,36 @@ const ShopperSettings = () => {
                 onCheckedChange={(checked) =>
                   setShopper({ ...shopper, is_available: checked })
                 }
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Notification Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="w-5 h-5" /> Notifications
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Push Notifications</Label>
+                <p className="text-sm text-muted-foreground">
+                  Get notified about new jobs
+                </p>
+              </div>
+              <Switch
+                checked={pushNotifications}
+                disabled={!pushSupported}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    enablePushNotifications();
+                  } else {
+                    updatePreferences(emailNotifications, false);
+                  }
+                }}
               />
             </div>
           </CardContent>

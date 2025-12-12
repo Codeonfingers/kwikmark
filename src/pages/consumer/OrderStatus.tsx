@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   Package, CheckCircle2, Clock, Truck, MapPin, ArrowLeft, Loader2, Star,
-  Camera, ThumbsUp, ThumbsDown, AlertTriangle, CreditCard, Flag
+  Camera, ThumbsUp, ThumbsDown, AlertTriangle, CreditCard, Flag, RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,8 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import OrderTrackingMap from "@/components/tracking/OrderTrackingMap";
 import MomoPaymentModal from "@/components/shared/MomoPaymentModal";
 import RatingModal from "@/components/shared/RatingModal";
+import SubstitutionRequestModal from "@/components/substitution/SubstitutionRequestModal";
+import SubstitutionRequestsList from "@/components/substitution/SubstitutionRequestsList";
 import { useOrders } from "@/hooks/useOrders";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -30,6 +32,7 @@ const OrderStatus = () => {
   const [showMap, setShowMap] = useState(false);
   const [shopperJob, setShopperJob] = useState<any>(null);
   const [inspectionNotes, setInspectionNotes] = useState("");
+  const [substitutionItem, setSubstitutionItem] = useState<any>(null);
 
   const order = orders.find(o => o.id === id);
 
@@ -254,6 +257,11 @@ const OrderStatus = () => {
           </Card>
         )}
 
+        {/* Substitution Requests */}
+        {id && (
+          <SubstitutionRequestsList orderId={id} role="consumer" />
+        )}
+
         {/* Order Items */}
         <Card>
           <CardHeader className="pb-2">
@@ -263,11 +271,28 @@ const OrderStatus = () => {
             <div className="space-y-2">
               {order.items?.map((item, index) => (
                 <div key={index} className="flex justify-between items-center p-2 bg-muted/50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-sm">{item.quantity}x {item.product_name}</p>
                     {item.notes && <p className="text-xs text-muted-foreground">{item.notes}</p>}
                   </div>
-                  <span className="font-bold text-sm">₵{Number(item.total_price).toFixed(2)}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm">₵{Number(item.total_price).toFixed(2)}</span>
+                    {proofUrl && order.inspection_status === "pending" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-7"
+                        onClick={() => setSubstitutionItem({
+                          id: item.id,
+                          product_name: item.product_name,
+                          quantity: item.quantity
+                        })}
+                      >
+                        <RefreshCw className="w-3 h-3 mr-1" />
+                        Substitute
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
               <div className="border-t pt-2 mt-2 space-y-1">
@@ -380,6 +405,16 @@ const OrderStatus = () => {
           targetName="Service Provider"
           targetType="shopper"
         />
+
+        {/* Substitution Request Modal */}
+        {substitutionItem && id && (
+          <SubstitutionRequestModal
+            open={!!substitutionItem}
+            onClose={() => setSubstitutionItem(null)}
+            orderId={id}
+            item={substitutionItem}
+          />
+        )}
       </div>
     </DashboardLayout>
   );

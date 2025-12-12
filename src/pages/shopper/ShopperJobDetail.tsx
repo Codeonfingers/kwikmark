@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import OrderTrackingMap from "@/components/tracking/OrderTrackingMap";
+import SubstitutionRequestsList from "@/components/substitution/SubstitutionRequestsList";
 import { useShopperJobs } from "@/hooks/useShopperJobs";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { supabase } from "@/integrations/supabase/client";
@@ -155,6 +156,11 @@ const ShopperJobDetail = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Substitution Requests */}
+        {job.order_id && (
+          <SubstitutionRequestsList orderId={job.order_id} role="shopper" />
+        )}
 
         {/* Map */}
         {showMap && (
