@@ -9,11 +9,13 @@ interface AuthContextType {
   session: Session | null;
   roles: AppRole[];
   loading: boolean;
+  rolesLoading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
   addRole: (role: AppRole) => Promise<{ error: Error | null }>;
+  refreshRoles: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,8 +25,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rolesLoading, setRolesLoading] = useState(false);
 
   const fetchRoles = async (userId: string) => {
+    setRolesLoading(true);
     const { data, error } = await supabase
       .from("user_roles")
       .select("role")
@@ -32,6 +36,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     if (!error && data) {
       setRoles(data.map((r) => r.role as AppRole));
+    }
+    setRolesLoading(false);
+  };
+
+  const refreshRoles = async () => {
+    if (user) {
+      await fetchRoles(user.id);
     }
   };
 
@@ -119,11 +130,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         session,
         roles,
         loading,
+        rolesLoading,
         signUp,
         signIn,
         signOut,
         hasRole,
         addRole,
+        refreshRoles,
       }}
     >
       {children}

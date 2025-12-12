@@ -9,18 +9,15 @@ import { useAuth } from "@/contexts/AuthContext";
  */
 const RoleRedirect = () => {
   const navigate = useNavigate();
-  const { user, loading, roles, hasRole } = useAuth();
+  const { user, loading, rolesLoading, roles, hasRole } = useAuth();
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || rolesLoading) return;
 
     if (!user) {
       navigate("/auth", { replace: true });
       return;
     }
-
-    // Wait for roles to load
-    if (roles.length === 0) return;
 
     // Redirect based on role priority
     if (hasRole("admin")) {
@@ -30,9 +27,10 @@ const RoleRedirect = () => {
     } else if (hasRole("shopper")) {
       navigate("/shopper", { replace: true });
     } else {
+      // Default to customer dashboard
       navigate("/customer", { replace: true });
     }
-  }, [user, loading, roles, hasRole, navigate]);
+  }, [user, loading, rolesLoading, roles, hasRole, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

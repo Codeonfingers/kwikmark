@@ -43,7 +43,7 @@ const roleInfo: Record<SignupRole, { icon: typeof Package; label: string; descri
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, roles, signIn, signUp, loading, hasRole, addRole } = useAuth();
+  const { user, roles, signIn, signUp, loading, rolesLoading, hasRole, addRole, refreshRoles } = useAuth();
   const { markets, loading: marketsLoading } = useMarkets();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signupStep, setSignupStep] = useState(1); // 1 = role selection, 2 = details
@@ -74,14 +74,14 @@ const Auth = () => {
 
   // Redirect authenticated users based on their roles
   useEffect(() => {
-    if (user && !loading && roles.length > 0 && !isSubmitting) {
-      // Small delay to ensure roles are synced
+    if (user && !loading && !rolesLoading && !isSubmitting) {
+      // Give a small delay for roles to be populated after signup
       const timer = setTimeout(() => {
         redirectBasedOnRole();
-      }, 100);
+      }, 200);
       return () => clearTimeout(timer);
     }
-  }, [user, loading, roles, isSubmitting]);
+  }, [user, loading, rolesLoading, roles, isSubmitting]);
 
   const redirectBasedOnRole = () => {
     // Prioritize the selected role during signup, otherwise use hierarchy
@@ -91,7 +91,8 @@ const Auth = () => {
       navigate("/vendor", { replace: true });
     } else if (hasRole("shopper")) {
       navigate("/shopper", { replace: true });
-    } else {
+    } else if (hasRole("consumer") || roles.length === 0) {
+      // Default to customer if consumer role or no roles yet
       navigate("/customer", { replace: true });
     }
   };
@@ -207,6 +208,9 @@ const Auth = () => {
       }
     }
 
+    // Refresh roles to ensure we have the latest
+    await refreshRoles();
+    
     setIsSubmitting(false);
     toast.success("Account created successfully! Welcome to KwikMarket.");
     // Redirect will happen via useEffect
