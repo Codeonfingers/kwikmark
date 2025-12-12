@@ -151,10 +151,13 @@ export type Database = {
       }
       orders: {
         Row: {
+          all_items_confirmed: boolean | null
           consumer_id: string
           created_at: string
           id: string
+          inspected_at: string | null
           inspection_notes: string | null
+          inspection_status: string | null
           market_id: string | null
           order_number: string
           pickup_photo_url: string | null
@@ -168,10 +171,13 @@ export type Database = {
           vendor_id: string | null
         }
         Insert: {
+          all_items_confirmed?: boolean | null
           consumer_id: string
           created_at?: string
           id?: string
+          inspected_at?: string | null
           inspection_notes?: string | null
+          inspection_status?: string | null
           market_id?: string | null
           order_number: string
           pickup_photo_url?: string | null
@@ -185,10 +191,13 @@ export type Database = {
           vendor_id?: string | null
         }
         Update: {
+          all_items_confirmed?: boolean | null
           consumer_id?: string
           created_at?: string
           id?: string
+          inspected_at?: string | null
           inspection_notes?: string | null
+          inspection_status?: string | null
           market_id?: string | null
           order_number?: string
           pickup_photo_url?: string | null
@@ -451,6 +460,45 @@ export type Database = {
         }
         Relationships: []
       }
+      role_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          id: string
+          reason: string | null
+          requested_role: Database["public"]["Enums"]["app_role"]
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          requested_role: Database["public"]["Enums"]["app_role"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          requested_role?: Database["public"]["Enums"]["app_role"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       shopper_jobs: {
         Row: {
           accepted_at: string | null
@@ -460,6 +508,8 @@ export type Database = {
           id: string
           order_id: string
           picked_up_at: string | null
+          proof_uploaded_at: string | null
+          proof_url: string | null
           shopper_id: string | null
           status: string
         }
@@ -471,6 +521,8 @@ export type Database = {
           id?: string
           order_id: string
           picked_up_at?: string | null
+          proof_uploaded_at?: string | null
+          proof_url?: string | null
           shopper_id?: string | null
           status?: string
         }
@@ -482,6 +534,8 @@ export type Database = {
           id?: string
           order_id?: string
           picked_up_at?: string | null
+          proof_uploaded_at?: string | null
+          proof_url?: string | null
           shopper_id?: string | null
           status?: string
         }
