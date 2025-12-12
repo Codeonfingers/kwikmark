@@ -45,7 +45,7 @@ export const usePayments = () => {
       }
 
       setProcessing(false);
-      toast.success("Payment successful!");
+      toast.success("Payment request submitted! Please complete the payment on your phone. An admin will verify your payment.");
       return { data: response.data.payment, error: null };
     } catch (error) {
       setProcessing(false);
