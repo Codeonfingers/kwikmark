@@ -47,6 +47,7 @@ const ShopperJobDetail = () => {
 
     const { url, error } = await uploadImage(file, "product-images");
     if (url) {
+      // Update shopper_jobs table
       await supabase
         .from("shopper_jobs")
         .update({ 
@@ -55,8 +56,19 @@ const ShopperJobDetail = () => {
         })
         .eq("id", job.id);
 
+      // Also update the order's pickup_photo_url so customer can see it
+      if (job.order_id) {
+        await supabase
+          .from("orders")
+          .update({ 
+            pickup_photo_url: url,
+            status: "inspecting" // Move to inspecting status when proof is uploaded
+          })
+          .eq("id", job.order_id);
+      }
+
       setProofUrl(url);
-      toast.success("Proof photo uploaded!");
+      toast.success("Proof photo uploaded! Customer will be notified to inspect.");
     }
   };
 

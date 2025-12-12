@@ -19,6 +19,7 @@ import CreateOrder from "./pages/customer/CreateOrder";
 import ConsumerMarket from "./pages/consumer/ConsumerMarket";
 import ConsumerOrders from "./pages/consumer/ConsumerOrders";
 import ConsumerSettings from "./pages/consumer/ConsumerSettings";
+import ConsumerDisputes from "./pages/consumer/ConsumerDisputes";
 import OrderStatus from "./pages/consumer/OrderStatus";
 
 // Vendor pages
@@ -102,6 +103,11 @@ const App = () => (
             <Route path="/consumer/status/:id" element={
               <ProtectedRoute requiredRole="consumer">
                 <OrderStatus />
+              </ProtectedRoute>
+            } />
+            <Route path="/consumer/disputes/new" element={
+              <ProtectedRoute requiredRole="consumer">
+                <ConsumerDisputes />
               </ProtectedRoute>
             } />
             <Route path="/customer" element={

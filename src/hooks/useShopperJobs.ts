@@ -114,25 +114,62 @@ export const useShopperJobs = () => {
           table: "shopper_jobs",
         },
         (payload) => {
-          if (payload.eventType === "INSERT" && payload.new.status === "available") {
+          console.log("[ShopperJobs] Realtime event:", payload.eventType, payload.new);
+          
+          if (payload.eventType === "INSERT" && (payload.new as ShopperJob).status === "available") {
+            // New job available - fetch with order details
             supabase
               .from("shopper_jobs")
-              .select("id, order_id, status, created_at, accepted_at, picked_up_at, delivered_at, shopper_id, orders(*)")
-              .eq("id", payload.new.id)
+              .select("id, order_id, status, created_at, accepted_at, picked_up_at, delivered_at, shopper_id, proof_url, proof_uploaded_at, orders(*)")
+              .eq("id", (payload.new as ShopperJob).id)
               .single()
               .then(({ data }) => {
                 if (data) {
-                  setAvailableJobs((prev) => [
-                    sanitizeJob(data as any, false),
-                    ...prev,
-                  ]);
+                  console.log("[ShopperJobs] Adding new available job:", data);
+                  setAvailableJobs((prev) => {
+                    // Avoid duplicates
+                    if (prev.some(j => j.id === data.id)) return prev;
+                    return [sanitizeJob(data as any, false), ...prev];
+                  });
                 }
               });
           } else if (payload.eventType === "UPDATE") {
             const updated = payload.new as ShopperJob;
-            if (updated.status !== "available") {
+            
+            // If job is no longer available, remove from available list
+            if (updated.status !== "available" || updated.shopper_id) {
               setAvailableJobs((prev) => prev.filter((j) => j.id !== updated.id));
             }
+            
+            // Refetch myJobs to get updated data
+            supabase
+              .from("shopper_jobs")
+              .select("*, orders(*)")
+              .eq("id", updated.id)
+              .single()
+              .then(({ data }) => {
+                if (data && data.shopper_id) {
+                  // Check if this job belongs to current user by comparing with shopper state
+                  setMyJobs((prev) => {
+                    const existing = prev.findIndex(j => j.id === data.id);
+                    // Only update if job exists in myJobs OR if it was just accepted
+                    if (existing >= 0 || (data.shopper_id && updated.status === "accepted")) {
+                      const sanitized = sanitizeJob(data as any, true);
+                      if (existing >= 0) {
+                        const newJobs = [...prev];
+                        newJobs[existing] = sanitized;
+                        return newJobs;
+                      }
+                      // Check if this is for current shopper before adding
+                      return prev;
+                    }
+                    return prev;
+                  });
+                }
+              });
+          } else if (payload.eventType === "DELETE") {
+            setAvailableJobs((prev) => prev.filter((j) => j.id !== (payload.old as ShopperJob).id));
+            setMyJobs((prev) => prev.filter((j) => j.id !== (payload.old as ShopperJob).id));
           }
         }
       )
